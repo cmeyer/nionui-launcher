@@ -2028,7 +2028,9 @@ void PyCanvasRenderThread::run()
         while (m_needs_render && !m_cancel)
         {
             m_needs_render = false;
+            // qDebug() << "will render " << QDateTime::currentMSecsSinceEpoch() << " " << (void *)m_canvas << " " << m_canvas->size();
             m_canvas->render();
+            // qDebug() << "will emit " << QDateTime::currentMSecsSinceEpoch() << " " << (void *)m_canvas << " " << m_canvas->size();
             Q_EMIT renderingReady();
         }
     }
@@ -2111,6 +2113,7 @@ void PyCanvas::render()
 
     //QDateTime start = QDateTime::currentDateTime();
 
+    // qDebug() << "render1 " << QDateTime::currentMSecsSinceEpoch() << " " << (void *)this << " " << this->size();
     RenderedTimeStamps rendered_timestamps = PaintBinaryCommands(painter, commands_binary, imageMap, &m_image_cache);
 
     PaintCommands(painter, commands, &m_image_cache);
@@ -2137,6 +2140,7 @@ void PyCanvas::render()
 
     //qDebug() << "Paint " << QDateTime::currentDateTime() << " elapsed " << start.msecsTo(QDateTime::currentDateTime())/1000.0;
 
+    // qDebug() << "render2 " << QDateTime::currentMSecsSinceEpoch() << " " << (void *)this << " " << this->size();
     {
         QMutexLocker locker(&m_rendered_image_mutex);
         m_rendered_image = image;
@@ -2146,6 +2150,8 @@ void PyCanvas::render()
 
 void PyCanvas::paintGL()
 {
+    // qDebug() << "begin paint " << QDateTime::currentMSecsSinceEpoch() << " " << (void *)this << " " << this->size();
+
     QPainter painter(this);
 
     QImage image;
@@ -2188,6 +2194,8 @@ void PyCanvas::paintGL()
         painter.fillPath(path, Qt::black);
         painter.restore();
     }
+
+    // qDebug() << "end paint " << QDateTime::currentMSecsSinceEpoch() << " " << (void *)this << " " << this->size();
 }
 
 bool PyCanvas::event(QEvent *event)
